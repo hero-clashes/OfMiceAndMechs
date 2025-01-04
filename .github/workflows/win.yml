@@ -26,11 +26,11 @@ jobs:
       - name: install dep and finsihing up
         run: |
           echo ./Lib/site-packages/  >> ./python312._pth
-          echo import site >> ./python312._pth
+          echo | set /p dummyName=import site>> ./python312._pth
           curl -L https://bootstrap.pypa.io/get-pip.py -o get-pip.py
           ./python get-pip.py
           ./Scripts/pip install -r requirements.txt
-          echo python.exe executeMe.py  >> ./lunch_game.bat
+          echo | set /p dummyName=python.exe executeMe.py> ./lunch_game.bat
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
