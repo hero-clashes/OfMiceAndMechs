@@ -23,7 +23,7 @@ jobs:
           destination: .
           # Name of the downloaded ZIP file
           ZIPname: python-3.12.8-embed-amd64
-      - name: install dep and finsihing up
+      - name: install dep and finishing up
         run: |
           Add-Content -Path ./python312._pth -Value "./Lib/site-packages/"
           Add-Content -Path ./python312._pth -Value "import site"

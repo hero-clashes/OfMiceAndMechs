@@ -1,6 +1,5 @@
 tcod
 urwid
-pre-commit
 soundfile
 requests
 regex
