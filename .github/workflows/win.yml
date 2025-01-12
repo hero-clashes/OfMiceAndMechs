@@ -1,5 +1,6 @@
 name: Package Game
-
+env:
+    GH_TOKEN: ${{ github.token }}
 on:
   workflow_dispatch: {}
   push:
