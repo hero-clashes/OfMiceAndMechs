@@ -46,7 +46,9 @@ jobs:
       #     compression-level: 9
       - name: Set Vars
         id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: |
+             Set-Location -Path ./Game/Data
+             echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Create Release
         run: |
             Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
