@@ -48,5 +48,4 @@ jobs:
         run: |
             Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
-            echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-            gh release create Dev-${{ env.sha_short }} ./OfMiceAndMechs-Win.zip --generate-notes --latest
+            gh release create Dev-${GITHUB_SHA::6} ./OfMiceAndMechs-Win.zip --generate-notes --latest
