@@ -38,3 +38,5 @@ jobs:
           path: |
             *
           compression-level: 9
+      - name: Create Release
+        run: gh release create ${GITHUB_REF#refs/*/} -t ${GITHUB_REF#refs/*/} OfMiceAndMechs-Win.zip --generate-notes
