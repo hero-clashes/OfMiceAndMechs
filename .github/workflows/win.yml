@@ -43,4 +43,6 @@ jobs:
       #       /Game/*
       #     compression-level: 9
       - name: Create Release
-        run: ./Game/Data/gh release create Latest ./OfMiceAndMechs-Win.zip --generate-notes
+        run: |
+            Set-Location -Path ./Game/Data
+            gh release create Latest ./OfMiceAndMechs-Win.zip --generate-notes
