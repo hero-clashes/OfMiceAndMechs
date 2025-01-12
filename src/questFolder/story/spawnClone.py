@@ -37,15 +37,16 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
-            for item in self.character.container.getItemsByType("GooDispenser"):
-                if item.charges > 0:
-                    newQuest = src.quests.questMap["FillFlask"]()
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    newQuest = src.quests.questMap["FetchItems"](toCollect="Flask",tryHard=True,amount=1)
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    return
+            for room in self.character.getTerrain().rooms:
+                for item in room.getItemsByType("GooDispenser"):
+                    if item.charges > 0:
+                        newQuest = src.quests.questMap["FillFlask"]()
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        newQuest = src.quests.questMap["FetchItems"](toCollect="Flask",tryHard=True,amount=1)
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
 
             if self.character.container.isRoom:
                 for item in self.character.container.getItemsByType("GooProducer"):
@@ -77,7 +78,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     return
 
             # ensure traprooms don't fill up
-            for room in terrain.rooms:
+            for room in self.character.getTerrain().rooms:
                 if not room.tag == "traproom":
                     continue
                 numItems = 0
@@ -109,12 +110,24 @@ class SpawnClone(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter tile"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter tile"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter tile"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter tile"))
             return (None,None)
 
         growthTank = character.container.getItemByType("GrowthTank")
         if not growthTank:
             self.fail(reason="no growth tank found")
             return (None,None)
+
+        if len(growthTank.container.getItemByPosition(growthTank.getPosition(offset=(1,0,0)))) > 1:
+            quest = src.quests.questMap["CleanSpace"](targetPosition=growthTank.getPosition(offset=(1,0,0)),targetPositionBig=growthTank.getBigPosition(),abortOnfullInventory=False)
+            return ([quest],None)
 
         if not growthTank.filled and len(growthTank.getFlasks(character)) < 1:
             quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=1)
@@ -124,6 +137,15 @@ class SpawnClone(src.quests.MetaQuestSequence):
         if character.getDistance(itemPos) > 1:
             quest = src.quests.questMap["GoToPosition"](targetPosition=growthTank.getPosition(),reason="to be able to use the growth tank",description="go to growth tank",ignoreEndBlocked=True)
             return ([quest],None)
+
+        if character.macroState.get("itemMarkedLast"):
+            if character.macroState["itemMarkedLast"].type == "GrowthTank":
+                if character.macroState["itemMarkedLast"].filled:
+                    return (None,("j","spawn clone"))
+                else:
+                    return (None,("j","refill growth tank"))
+            else:
+                return (None,(".","undo selection"))
 
         direction = ""
         if character.getPosition(offset=(1,0,0)) == itemPos:

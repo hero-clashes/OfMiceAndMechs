@@ -253,9 +253,12 @@ class Room:
 
         return result
 
-    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False):
+    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False,forceGenericStorage=False):
         result = []
         for inputSlot in self.inputSlots:
+            if forceGenericStorage:
+                continue
+
             if (itemType and inputSlot[1] != itemType) and (not allowAny or inputSlot[1] is not None):
                 continue
 
@@ -287,7 +290,9 @@ class Room:
 
         if allowStorage:
             for storageSlot in self.storageSlots:
-                if (itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] is not None):
+                if (not forceGenericStorage) and ((itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] is not None)):
+                    continue
+                if forceGenericStorage and (storageSlot[1] is not None):
                     continue
 
                 pos = storageSlot[0]
@@ -297,11 +302,13 @@ class Room:
                 if not items:
                     result.append(storageSlot)
                     continue
+                elif forceGenericStorage:
+                    continue
 
                 if fullyEmpty:
                     continue
 
-                if (itemType and not storageSlot[1] and items[0].type != itemType):
+                if (not forceGenericStorage) and (itemType and not storageSlot[1] and items[0].type != itemType):
                     continue
 
                 if items[0].type == "Scrap":
@@ -945,7 +952,7 @@ class Room:
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    if "city" not in character.faction or character.charType not in ("Character","Ghoul"):
+                    if "city" not in character.faction or character.charType not in ("Character","Ghoul","Clone"):
                         try:
                             character.specialDisplay
                         except:
@@ -985,7 +992,10 @@ class Room:
                             char = "@"+health
                         elif viewChar == "name":
                             if not isinstance(character,src.characters.characterMap["Ghoul"]):
-                                char = character.name[0]+character.name.split(" ")[1][0]
+                                if len(character.name.split(" ")) > 1:
+                                    char = character.name[0]+character.name.split(" ")[1][0]
+                                else:
+                                    char = character.name[0]+character.name[1]
                             else:
                                 char = "Gu"
                         elif viewChar == "faction":
@@ -1265,7 +1275,10 @@ class Room:
                     else:
                         display = ".."
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     if duration > 10:
                         animation[2] -= 10
@@ -1279,7 +1292,10 @@ class Room:
                     if animationType == "shielded":
                         display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     if duration > 10:
                         animation[2] -= 10
@@ -1331,7 +1347,10 @@ class Room:
                     display = "##"
                     display = (src.interaction.urwid.AttrSpec(["#fa0","#f00"][duration%2],["#f00","#fa0"][duration%2],),display)
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     animation[2] -= 1
 
@@ -1345,7 +1364,10 @@ class Room:
                         logger.error(f"draw animation without position {animation}")
                         continue
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     animation[2] -= 1
 

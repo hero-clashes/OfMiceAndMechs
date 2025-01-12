@@ -16,6 +16,17 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+            
         terrain = character.getTerrain()
 
         if character.getNearbyEnemies():
@@ -74,6 +85,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         for otherChar in terrain.characters:
             if otherChar.faction != character.faction:
                 enemyCount += 1
+                if not terrain.alarm and enemyCount > 2:
+                    quest = src.quests.questMap["ReadyBaseDefences"]()
+                    return ([quest],None)
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
             else:
@@ -134,6 +148,20 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             if numTrapRooms < numGlassHearts//2:
                 quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=1000)
+                return ([quest],None)
+
+        # ensure the base is set to auto expand
+        foundCityPlaner = None
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if not items:
+                continue
+            foundCityPlaner = items[0]
+            break
+
+        if foundCityPlaner:
+            if not foundCityPlaner.autoExtensionThreashold:
+                quest = src.quests.questMap["SetBaseAutoExpansion"](targetLevel=2)
                 return ([quest],None)
 
         # get statues ready for teleport

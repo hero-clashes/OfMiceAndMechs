@@ -53,6 +53,16 @@ Rule the world and put an end to those attacks!
         if self.subQuests:
             return (None,None)
 
+        if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter room"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter room"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter room"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter room"))
+
         terrain = character.getTerrain()
         for room in terrain.rooms:
             throne = room.getItemByType("Throne",needsBolted=True)
@@ -76,14 +86,17 @@ Rule the world and put an end to those attacks!
 
         if (pos[0],pos[1],pos[2]) == targetPosition:
             return (None,("j","activate the Throne"))
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
         if (pos[0]-1,pos[1],pos[2]) == targetPosition:
-            return (None,("Ja","activate the Throne"))
+            return (None,(interactionCommand+"a","activate the Throne"))
         if (pos[0]+1,pos[1],pos[2]) == targetPosition:
-            return (None,("Jd","activate the Throne"))
+            return (None,(interactionCommand+"d","activate the Throne"))
         if (pos[0],pos[1]-1,pos[2]) == targetPosition:
-            return (None,("Jw","activate the Throne"))
+            return (None,(interactionCommand+"w","activate the Throne"))
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
-            return (None,("Js","activate the Throne"))
+            return (None,(interactionCommand+"s","activate the Throne"))
         return None
 
 

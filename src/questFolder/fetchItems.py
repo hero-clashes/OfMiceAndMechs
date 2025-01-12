@@ -166,6 +166,21 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
+        # close open menues
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"to close menu"))
+
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+
         if not self.amount:
             numItemsCollected = 0
             for item in reversed(character.inventory):
@@ -173,7 +188,7 @@ Press d to move the cursor and show the subquests description.
                     break
                 numItemsCollected += 1
             if (numItemsCollected+character.getFreeInventorySpace()) < 5:
-                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
                 if not dryRun:
                     self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest],None)
@@ -186,7 +201,7 @@ Press d to move the cursor and show the subquests description.
                 numItemsCollected += 1
 
             if character.getFreeInventorySpace() < self.amount-numItemsCollected:
-                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
                 if not dryRun:
                     self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest],None)
@@ -221,16 +236,19 @@ Press d to move the cursor and show the subquests description.
                                 foundDirection = offset
 
                 if foundDirection:
+                    interactionCommand = "K"
+                    if "advancedPickup" in character.interactionState:
+                        interactionCommand = ""
                     if foundDirection == (0,0,0):
-                        return (None,("K.","pick up item"))
+                        return (None,(interactionCommand+".","pick up item"))
                     if foundDirection == (1,0,0):
-                        return (None,("Kd","pick up item"))
+                        return (None,(interactionCommand+"d","pick up item"))
                     if foundDirection == (-1,0,0):
-                        return (None,("Ka","pick up item"))
+                        return (None,(interactionCommand+"a","pick up item"))
                     if foundDirection == (0,1,0):
-                        return (None,("Ks","pick up item"))
+                        return (None,(interactionCommand+"s","pick up item"))
                     if foundDirection == (0,-1,0):
-                        return (None,("Kw","pick up item"))
+                        return (None,(interactionCommand+"w","pick up item"))
 
                 outputSlot = random.choice(outputSlots)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
@@ -262,16 +280,19 @@ Press d to move the cursor and show the subquests description.
                                         foundDirection = offset
 
                     if foundDirection:
+                        interactionCommand = "K"
+                        if "advancedPickup" in character.interactionState:
+                            interactionCommand = ""
                         if foundDirection == (0,0,0):
-                            return (None,("K.","pick up item"))
+                            return (None,(interactionCommand+".","pick up item"))
                         if foundDirection == (1,0,0):
-                            return (None,("Kd","pick up item"))
+                            return (None,(interactionCommand+"d","pick up item"))
                         if foundDirection == (-1,0,0):
-                            return (None,("Ka","pick up item"))
+                            return (None,(interactionCommand+"a","pick up item"))
                         if foundDirection == (0,1,0):
-                            return (None,("Ks","pick up item"))
+                            return (None,(interactionCommand+"s","pick up item"))
                         if foundDirection == (0,-1,0):
-                            return (None,("Kw","pick up item"))
+                            return (None,(interactionCommand+"w","pick up item"))
 
                     item = random.choice(candidates)
                     quests = []

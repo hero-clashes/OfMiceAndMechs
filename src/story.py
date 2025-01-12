@@ -1919,6 +1919,11 @@ but they are likely to explode when disturbed.
                 None,
            )
 
+        for item in mainRoom.getItemByPosition((12,6,0)):
+            if item.type != "Door":
+                continue
+            item.walkable = False
+
         # place anvil
         anvilPos = (10,2,0)
         machinemachine = src.items.itemMap["Anvil"]()
@@ -2008,6 +2013,7 @@ but they are likely to explode when disturbed.
         # add management items
         cityPlaner = src.items.itemMap["CityPlaner"]()
         cityPlaner.bolted = True
+        cityPlaner.autoExtensionThreashold = 0
         mainRoom.addItem(cityPlaner,(2,2,0))
         promoter = src.items.itemMap["Promoter"]()
         promoter.bolted = True
@@ -2024,7 +2030,7 @@ but they are likely to explode when disturbed.
         siegeManager.handleTick()
 
         # spawn npc
-        actualCharacter = src.characters.Character()
+        actualCharacter = src.characters.characterMap["Clone"]()
         sword = src.items.itemMap["Sword"]()
         sword.baseDamage = 10
         actualCharacter.weapon = sword
@@ -2038,6 +2044,18 @@ but they are likely to explode when disturbed.
         quest.activate()
         actualCharacter.quests.append(quest)
 
+        # add most basic items
+        painter = src.items.itemMap["Painter"]()
+        painter.bolted = False
+        mainRoom.addItem(painter,(7,11,0))
+        roomBuilder = src.items.itemMap["RoomBuilder"]()
+        roomBuilder.bolted = False
+        mainRoom.addItem(roomBuilder,(8,11,0))
+        roomBuilder = src.items.itemMap["RoomBuilder"]()
+        roomBuilder.bolted = False
+        mainRoom.addItem(roomBuilder,(9,11,0))
+
+        """
         ####
         # create storage room
         ##
@@ -2067,14 +2085,7 @@ but they are likely to explode when disturbed.
             for x in range(2,11):
                 storageRoom.addStorageSlot((x,y,0),None)
             storageRoom.addWalkingSpace((11,y,0))
-
-        painter = src.items.itemMap["Painter"]()
-        painter.bolted = False
-        storageRoom.addItem(painter,(2,2,0))
-
-        roomBuilder = src.items.itemMap["RoomBuilder"]()
-        roomBuilder.bolted = False
-        storageRoom.addItem(roomBuilder,(3,2,0))
+        """
 
         ####
         # create spawn room
@@ -2120,6 +2131,7 @@ but they are likely to explode when disturbed.
 
         command = src.items.itemMap["Command"]()
         command.command = list("dj")+["enter"]+list("sdddJwaaaw")
+        command.bolted = True
         spawnRoom.addItem(command,(4,3,0))
 
         flask = src.items.itemMap["GooFlask"]()
@@ -2141,6 +2153,42 @@ but they are likely to explode when disturbed.
         item = src.items.itemMap["GooDispenser"]()
         item.charges = 5
         spawnRoom.addItem(item,(8,10,0))
+
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(2,8,0))
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(3,8,0))
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(4,8,0))
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(5,8,0))
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(2,7,0))
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(3,7,0))
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(4,7,0))
+        door = src.items.itemMap["Door"]()
+        door.bolted = False
+        spawnRoom.addItem(door,(5,7,0))
+
+        spawnRoom.addStorageSlot((7,8,0),"ManaCrystal",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((8,8,0),"SpiderEye",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((9,8,0),"ChitinPlates",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((10,8,0),"Grindstone",{"desiredState":"filled"})
+
+        spawnRoom.addStorageSlot((2,5,0),"Door",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((3,5,0),"Door",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((4,5,0),"Door",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((5,5,0),"Door",{"desiredState":"filled"})
+
 
         ####
         # create temple
@@ -2195,7 +2243,6 @@ but they are likely to explode when disturbed.
         dutyBeacon.bolted = True
         throneRoom.addItem(dutyBeacon,(6,9,0))
         throneRoom.addItem(src.items.itemMap["Regenerator"](), (6, 10, 0))
-
 
         for basePos in [(1,2,0),(11,2,0),(1,10,0),(11,10,0)]:
             motionSensor = src.items.itemMap["MotionSensor"]()
@@ -2423,10 +2470,11 @@ but they are likely to explode when disturbed.
         moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0),(3,3,0),(12,5,0),(5,12,0)]
         farmPlotTiles = [(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
         fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
-        wallTiles = [(4,3,0),(2,2,0),(6,3,0),(10,3,0),(12,4,0),(11,11,0),(11,12,0),(9,12,0)]
+        wallTiles = [(4,3,0),(2,2,0),(6,3,0),(10,3,0),(12,4,0),(11,11,0),(11,12,0),(9,12,0),(8,7,0)]
         genericEnemyGroups = [(2,3,0),(5,2,0),(8,1,0),(11,4,0),(11,8,0),(12,11,0),(10,13,0),(7,12,0)]
         snatcherNests = [(4,12,0),(8,3,0),]
         forestPositions = [(6,6,0)]
+        specialWallTiles = [(8,7,0)]
 
         ###############################################
         ###
@@ -2553,20 +2601,29 @@ but they are likely to explode when disturbed.
                         continue
                     wallSpots.append((x,y,0))
             for wallSpot in wallSpots:
+                if random.random() < 0.3:
+                    continue
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 currentTerrain.addItem(item,(15*wallTile[0]+wallSpot[0],15*wallTile[1]+wallSpot[1],0))
 
-            # add enemies
-            for _i in range(0,random.randint(1,3)):
-                enemy = src.characters.characterMap["ShieldBug"]()
-                enemy.faction = "insects"
-                quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
-                currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
+            if not wallTile in specialWallTiles:
+                # add enemies
+                for _i in range(0,random.randint(1,3)):
+                    enemy = src.characters.characterMap["ShieldBug"]()
+                    enemy.faction = "insects"
+                    quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+                    currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
+            else:
+                # add enemies
+                for _i in range(random.randint(8,10)):
+                    enemy = src.characters.characterMap["Spider"]()
+                    enemy.faction = "insects"
+                    currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
 
         # add mold spots
         for moldTile in moldTiles:
@@ -3230,7 +3287,7 @@ but they are likely to explode when disturbed.
     def createStoryStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
 
-        mainChar = src.characters.Character()
+        mainChar = src.characters.characterMap["Clone"]()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
         mainChar.duties = ["praying","city planning","clone spawning",]

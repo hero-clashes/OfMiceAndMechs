@@ -371,7 +371,7 @@ class Character:
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
-        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition)
+        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition,lifetime=1000,allowMapMenu=False)
         quest.selfAssigned = True
         quest.autoSolve = True
         quest.assignToCharacter(self)
@@ -383,8 +383,8 @@ class Character:
         """
         gives the charachter an extra health boost, but reduces the characters max health
         """
-        if self.adjustedMaxHealth > 10:
-            self.adjustedMaxHealth -= 10
+        if self.maxHealth > 10:
+            self.maxHealth -= 10
             self.heal(50)
 
     def addGrievance(self,grievance):
@@ -1277,6 +1277,7 @@ press l/L for light attack
 
 press any other key to attack normally"""
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu.tag = "specialAttackSelection"
         self.macroState["submenue"] = submenu
         self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.runCommandString("~",nativeKey=True)
@@ -2234,7 +2235,7 @@ press any other key to attack normally"""
 
         itemList = self.container.getItemByPosition(position)
 
-        if item.walkable is False and len(itemList):
+        if item.walkable is False and len(itemList) and not (self.container.isRoom and (self.xPosition in (0,12) or self.yPosition in (0,12))):
             self.addMessage("you need a clear space to drop big items")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             if position:

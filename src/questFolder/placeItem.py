@@ -4,7 +4,7 @@ import src
 class PlaceItem(src.quests.MetaQuestSequence):
     type = "PlaceItem"
 
-    def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None):
+    def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None, clearPath = False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = f"{description} {itemType} on position {targetPosition} on tile {targetPositionBig}"
@@ -14,10 +14,11 @@ class PlaceItem(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
         self.boltDown = boltDown
         self.reason = reason
+        self.clearPath = clearPath
     
     def handleQuestFailure(self,extraInfo):
         if extraInfo["reason"] == "no path found":
-            if self.tryHard:
+            if self.tryHard or self.clearPath:
                 newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=self.targetPosition)
                 self.addQuest(newQuest)
                 self.startWatching(newQuest,self.handleQuestFailure,"failed")
@@ -139,6 +140,8 @@ Press d to move the cursor and show the subquests description.
         self.checkPlacedItem(item)
 
     def checkPlacedItem(self,item):
+        if not item.container:
+            return
         if item.type == self.itemType:
             if item.container.isRoom:
                 if item.container.getPosition() == self.targetPositionBig and item.getPosition() == self.targetPosition:

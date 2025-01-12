@@ -52,6 +52,17 @@ Use the Promotor to do this.
         if character.macroState["submenue"]:
             return (None,(["esc"],"close the menu"))
 
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
@@ -64,14 +75,17 @@ Use the Promotor to do this.
             if item.type != "Promoter":
                 continue
 
+            interactionCommand = "J"
+            if "advancedInteraction" in character.interactionState:
+                interactionCommand = ""
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return (None,("Ja","get promotion"))
+                return (None,(interactionCommand+"a","get promotion"))
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return (None,("Jd","get promotion"))
+                return (None,(interactionCommand+"d","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return (None,("Jw","get promotion"))
+                return (None,(interactionCommand+"w","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return (None,("Js","get promotion"))
+                return (None,(interactionCommand+"s","get promotion"))
             
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
             return  ([quest],None)

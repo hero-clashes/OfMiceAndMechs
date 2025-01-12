@@ -98,7 +98,10 @@ Scrapfields are shown on the minimap as white ss"""]
                     if direction == (0,-1,0):
                         command = "Kw"
 
-                    return (None,(command*min(10-len(character.inventory),items[0].amount),"pick up scrap"))
+                    command = command*min(10-len(character.inventory),items[0].amount)
+                    if command[0] == "K" and "advancedPickup" in character.interactionState:
+                        command = command[1:]
+                    return (None,(command,"pick up scrap"))
 
         foundScrap = None
         room = character.container
@@ -212,6 +215,6 @@ Scrapfields are shown on the minimap as white ss"""]
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return (quests,None)
-        return None
+        return (None,None)
 
 src.quests.addType(GatherScrap)

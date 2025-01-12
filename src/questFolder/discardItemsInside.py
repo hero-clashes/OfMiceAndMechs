@@ -2,10 +2,10 @@ import random
 
 import src
 
-class DropItemsOutside(src.quests.MetaQuestSequence):
-    type = "DropItemsOutside"
+class DiscardItemsInside(src.quests.MetaQuestSequence):
+    type = "DiscardItemsInside"
 
-    def __init__(self, description="drop items outside", creator=None, toCollect=None, lifetime=None, reason=None):
+    def __init__(self, description="discard items inside", creator=None, toCollect=None, lifetime=None, reason=None):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -20,7 +20,7 @@ class DropItemsOutside(src.quests.MetaQuestSequence):
 
         reason = ""
         text = """
-Clear your inventory outside"""
+Clear your inventory inside"""
         text += f"""{reason}."""
         text += """
 
@@ -47,20 +47,23 @@ This quest will end when your inventory is empty."""
 
         terrain = character.getTerrain()
 
-        # drop items
-        if not terrain.getRoomByPosition(character.getBigPosition()):
-            if not terrain.getItemByPosition(character.getPosition()) and not (character.getSpacePosition()[0] in (1,13) or character.getSpacePosition()[1] in (1,13)):
-                return (None,("l","drop item"))
-            # go somewhere else
-            if random.random() > 0.1:
-                pos = (random.randint(2,12),random.randint(2,12),0)
-                quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="move to a random point to drop items")
+        # go inside
+        if not character.container.isRoom:
+            quest = src.quests.questMap["GoHome"]()
+            return ([quest],None)
+
+        dropPositions = [(0,6,0),(12,6,0),(6,0,0),(6,12,0)]
+        if character.getPosition() in dropPositions:
+            return (None,("l","drop item"))
+
+        for dropPosition in dropPositions:
+            if character.container.getPositionWalkable(dropPosition):
+                quest = src.quests.questMap["GoToPosition"](targetPosition=dropPosition)
                 return ([quest],None)
 
-        # go somewhere else
-        bigPos = (random.randint(2,12),random.randint(2,12),0)
-        quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random tile to drop items")
-        return ([quest],None)
+        if dryRun:
+            self.fail("no drop spot")
+        return (None,None)
 
     def droppedItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0])
@@ -72,4 +75,4 @@ This quest will end when your inventory is empty."""
         self.startWatching(character,self.droppedItem, "itemDropped")
         return super().assignToCharacter(character)
 
-src.quests.addType(DropItemsOutside)
+src.quests.addType(DiscardItemsInside)

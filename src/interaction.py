@@ -1022,6 +1022,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "s":
         items = char.container.getItemByPosition(
@@ -1029,6 +1030,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "d":
         items = char.container.getItemByPosition(
@@ -1036,6 +1038,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "a":
         items = char.container.getItemByPosition(
@@ -1043,6 +1046,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == ".":
         items = char.container.getItemByPosition(
@@ -1050,6 +1054,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "i" and char.inventory:
         char.inventory[-1].configure(char)
@@ -2497,6 +2502,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 char.exhaustion = max(1,char.exhaustion-10)
             else:
                 char.exhaustion = 0
+            charState["itemMarkedLast"] = None
             char.lastMoveSkipped = True
             return None
         if key in (commandChars.move_north, "up"):
@@ -2715,8 +2721,8 @@ press key for the advanced interaction
 
 * w = activate north
 * a = activate west
-* s = activate east
-* d = activate south
+* s = activate south
+* d = activate east
 * . = activate item on floor
 * i = activate last item in inventory
 * f = eat food
@@ -2744,8 +2750,8 @@ press key for the configuration interaction
 
 * w = configure north
 * a = configure west
-* s = configure east
-* d = configure south
+* s = configure south
+* d = configure east
 * . = configure item on floor
 * i = configure last item in inventory
 
@@ -2796,8 +2802,8 @@ press key for advanced pickup
 
 * w = pick up north
 * a = pick up west
-* s = pick up east
-* d = pick up south
+* s = pick up south
+* d = pick up east
 * . = pick item on floor
 
 """
@@ -2820,8 +2826,8 @@ press key for advanced drop
 
 * w = drop north
 * a = drop west
-* s = drop east
-* d = drop south
+* s = drop south
+* d = drop east
 * . = drop on floor
 
 """
@@ -6920,7 +6926,6 @@ def advanceChar_disabled(char):
                     startTime = time.time()
 
                     while (not state["commandKeyQueue"]) and char.timeTaken < 1:
-                        renderGameDisplay()
                         hasAutosolveQuest = False
                         for quest in char.getActiveQuests():
                             if not quest.autoSolve:

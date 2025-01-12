@@ -32,6 +32,16 @@ Press JH to auto heal.
         if character.macroState["submenue"]:
             return (None,(["esc"],"close the menu"))
 
+        if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter room"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter room"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter room"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter room"))
+
         # heal using vials
         try:
             self.noVialHeal
@@ -77,7 +87,10 @@ Press JH to auto heal.
                     direction = "w"
 
                 if direction:
-                    return (None,("J"+direction,"inhale smoke"))
+                    interactionCommand = "J"
+                    if "advancedInteraction" in character.interactionState:
+                        interactionCommand = ""
+                    return (None,(interactionCommand+direction,"inhale smoke"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True)
             return ([quest],None)

@@ -70,6 +70,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         if not improvementAmount:
             character.addMessage("you can't improve your sword")
+            character.changed("sharpened sword")
             return
 
         params["sword"] = sword
@@ -84,13 +85,13 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
     def produceItem_done(self, params):
         character = params["character"]
         improvement = params["improvementAmount"]
-        character.addMessage(f"You improved the sword by {improvement!s} points")
-
         character.changed("sharpened sword")
 
         sword = params["sword"]
-        sword.name = "improved sword"
         sword.baseDamage += improvement
+
+        character.addMessage(f"You improved the sword by {improvement!s} to {sword.baseDamage}")
+
 
 
 src.items.addType(SwordSharpener)
