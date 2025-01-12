@@ -48,5 +48,5 @@ jobs:
         run: |
             Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
-            eSet-Variable -Name "s" -Value (git rev-parse --short HEAD) 
-            gh release create Dev-$s  ./OfMiceAndMechs-Win.zip --generate-notes --latest
+            Set-Variable -Name "s" -Value (git rev-parse --short HEAD) 
+            gh release create "Dev-"+$s  ./OfMiceAndMechs-Win.zip --generate-notes --latest
