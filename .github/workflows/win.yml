@@ -31,7 +31,8 @@ jobs:
           curl -L https://bootstrap.pypa.io/get-pip.py -o get-pip.py
           ./python get-pip.py
           ./Scripts/pip install -r requirements.txt
-          Get-ChildItem -Path ./ | Move-Item -Destination ./Game/Data -Force
+          New-Item -ItemType Directory -Path ./Game/Data -Force
+          Get-ChildItem -Path ./ -Exclude ./Game | Move-Item -Destination ./Game/Data -Force
           echo "./Data/python.exe ./Data/executeMe.py" | out-file ./Game/lunch_game.bat
           Compress-Archive -Path ./Game/* -Destination OfMiceAndMechs-Win.zip
       # - name: Upload Artifacts
