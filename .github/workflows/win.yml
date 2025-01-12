@@ -48,4 +48,4 @@ jobs:
         run: |
             Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
-            gh release create Dev-${GITHUB_SHA::6} ./OfMiceAndMechs-Win.zip --generate-notes --latest
+            gh release create Dev-${GITHUB_SHA} ./OfMiceAndMechs-Win.zip --generate-notes --latest
