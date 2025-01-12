@@ -47,4 +47,4 @@ jobs:
         run: |
             Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
-            gh release create Latest ./OfMiceAndMechs-Win.zip --generate-notes
+            gh release create Dev-${{ needs.release.outputs.timestamp }} ./OfMiceAndMechs-Win.zip --generate-notes --latest
