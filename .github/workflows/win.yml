@@ -44,14 +44,9 @@ jobs:
       #     path: |
       #       /Game/*
       #     compression-level: 9
-      - name: Set Vars
-        id: vars
-        run: |
-             Set-Location -Path ./Game/Data
-             echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Create Release
         run: |
             Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
-            echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-            gh release create Dev-${{ steps.vars.outputs.sha_short }} ./OfMiceAndMechs-Win.zip --generate-notes --latest
+            eSet-Variable -Name "s" -Value (git rev-parse --short HEAD) 
+            gh release create Dev-$s  ./OfMiceAndMechs-Win.zip --generate-notes --latest
