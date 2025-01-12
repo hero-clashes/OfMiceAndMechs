@@ -31,13 +31,16 @@ jobs:
           curl -L https://bootstrap.pypa.io/get-pip.py -o get-pip.py
           ./python get-pip.py
           ./Scripts/pip install -r requirements.txt
-          echo "python.exe executeMe.py" | out-file lunch_game.bat
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: OfMiceAndMechs-Win
-          path: |
-            *
-          compression-level: 9
+          New-Item -Path ./Game/Data -ItemType Directory -Force
+          Get-ChildItem -Path ./ -Recurse -File | Move-Item -Destination DEST
+          echo "./Data/python.exe ./Data/executeMe.py" | out-file ./Game/lunch_game.bat
+          Compress-Archive -Path ./Game/* -Destination OfMiceAndMechs-Win.zip
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: OfMiceAndMechs-Win
+      #     path: |
+      #       /Game/*
+      #     compression-level: 9
       - name: Create Release
-        run: gh release create ${GITHUB_REF_NAME} OfMiceAndMechs-Win.zip --generate-notes
+        run: gh release create Latest OfMiceAndMechs-Win.zip --generate-notes
