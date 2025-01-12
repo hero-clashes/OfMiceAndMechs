@@ -44,5 +44,6 @@ jobs:
       #     compression-level: 9
       - name: Create Release
         run: |
+            Copy-Item -Path ./OfMiceAndMechs-Win.zip -Destination ./Game/Data
             Set-Location -Path ./Game/Data
             gh release create Latest ./OfMiceAndMechs-Win.zip --generate-notes
